@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inclusiva de Historias</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: rgba(0, 123, 255, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #ffc107;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .book {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: box-shadow 0.3s;
+        }
+        .book:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .book img {
+            width: 50px;
+            height: 75px;
+            margin-right: 10px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .word {
+            display: inline-block;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        .word:hover {
+            background-color: #d1e7ff;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+            color: #666;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Página Inclusiva de Historias</h1>
+    <nav>
+        <a href="#login-section" onclick="showSection('login-section')">Inicio</a>
+        <a href="#welcome-section" onclick="showSection('welcome-section')">Bienvenida</a>
+        <a href="#create-story" onclick="showSection('create-story')">Crear Historia</a>
+        <a href="#edit-story" onclick="showSection('edit-story')">Editar Historias</a>
+        <a href="#reading-list" onclick="showSection('reading-list')">Libros de Lectura</a>
+    </nav>
+</header>
+
+<div class="container">
+    <div id="login-section" class="section">
+        <h2>Iniciar Sesión</h2>
+        <input type="text" id="username" placeholder="Nombre de usuario" />
+        <button class="button" onclick="login()">Iniciar Sesión</button>
+        <p id="login-message" style="color: green;"></p>
+    </div>
+
+    <div id="welcome-section" class="section" style="display: none;">
+        <h2 id="welcome-message"></h2>
+    </div>
+
+    <div id="create-story" class="section" style="display: none;">
+        <h2>Crear Historia</h2>
+        <textarea id="story-text" placeholder="Escribe tu historia aquí..." rows="5"></textarea>
+        <div>
+            <button class="button" onclick="startDictation()">Comenzar Dictado</button>
+            <button class="button" onclick="stopDictation()" style="display: none;" id="stop-button">Detener Grabación</button>
+            <button class="button" onclick="speakText('story-text')">Leer Historia</button>
+            <button class="button" onclick="saveStory()">Guardar Historia</button>
+        </div>
+        <div id="word-container"></div>
+    </div>
+
+    <div id="edit-story" class="section" style="display: none;">
+        <h2>Editar Historias</h2>
+        <select id="story-select"></select>
+        <button class="button" onclick="loadStory()">Cargar Historia</button>
+        <textarea id="edit-story-text" placeholder="Edita tu historia aquí..." rows="5"></textarea>
+        <button class="button" onclick="updateStory()">Actualizar Historia</button>
+        <div id="edit-word-container"></div>
+    </div>
+
+    <div id="reading-list" class="section" style="display: none;">
+        <h2>Libros de Lectura</h2>
+        <input type="text" id="book-title" placeholder="Título del libro" />
+        <input type="text" id="book-link" placeholder="Enlace del libro" />
+        <textarea id="book-description" placeholder="Descripción del libro" rows="3"></textarea>
+        <input type="file" id="book-image" accept="image/*" />
+        <button class="button" onclick="addBook()">Agregar Libro</button>
+        <div id="books-container"></div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 Página Inclusiva de Historias. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    let stories = [];
+    let books = [];
+    let recognition;
+
+    function login() {
+        const username = document.getElementById("username").value;
+        if (username) {
+            document.getElementById("login-section").style.display = "none";
+            document.getElementById("welcome-section").style.display = "block";
+            document.getElementById("welcome-message").innerText = `Bienvenido, ${username}!`;
+            document.getElementById("welcome-message").style.color = "#007bff";
+        }
+    }
+
+    function showSection(section) {
+        document.querySelectorAll('.section').forEach(sec => {
+            sec.style.display = 'none';
+        });
+        document.getElementById(section).style.display = 'block';
+    }
+
+    function startDictation() {
+        if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'es-ES';
+            recognition.interimResults = true; // Permitir resultados intermedios
+            recognition.maxAlternatives = 1;
+
+            recognition.start();
+            document.getElementById("stop-button").style.display = "inline-block";
+
+            recognition.onresult = function(event) {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join(' ');
+
+                // Solo agregar el texto final cuando la grabación se detiene
+                const storyTextArea = document.getElementById("story-text");
+                if (event.results[0].isFinal) {
+                    storyTextArea.value += (storyTextArea.value ? ' ' : '') + transcript; // Agregar un espacio si ya hay texto
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Error en el dictado: ', event.error);
+                recognition.stop();
+                document.getElementById("stop-button").style.display = "none";
+            };
+        } else {
+            alert("Lo siento, tu navegador no soporta la funcionalidad de dictado.");
+        }
+    }
+
+    function stopDictation() {
+        if (recognition) {
+            recognition.stop();
+            document.getElementById("stop-button").style.display = "none";
+        }
+    }
+
+    function speakText(textAreaId) {
+        const text = document.getElementById(textAreaId).value;
+        const utterance = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(utterance);
+    }
+
+    function saveStory() {
+        const storyText = document.getElementById("story-text").value;
+        if (storyText) {
+            stories.push(storyText);
+            alert("Historia guardada!");
+            document.getElementById("story-text").value = '';
+            updateStorySelect();
+            createWordSpans(storyText, 'word-container');
+        }
+    }
+
+    function updateStorySelect() {
+        const select = document.getElementById("story-select");
+        select.innerHTML = '';
+        stories.forEach((story, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = `Historia ${index + 1}`;
+            select.appendChild(option);
+        });
+    }
+
+    function loadStory() {
+        const selectedIndex = document.getElementById("story-select").value;
+        if (selectedIndex !== "") {
+            document.getElementById("edit-story-text").value = stories[selectedIndex];
+            createWordSpans(stories[selectedIndex], 'edit-word-container', 'edit-story-text');
+        }
+    }
+
+    function updateStory() {
+        const selectedIndex = document.getElementById("story-select").value;
+        const updatedText = document.getElementById("edit-story-text").value;
+        if (selectedIndex !== "" && updatedText) {
+            stories[selectedIndex] = updatedText;
+            alert("Historia actualizada!");
+            createWordSpans(updatedText, 'edit-word-container', 'edit-story-text');
+        }
+    }
+
+    function addBook() {
+        const title = document.getElementById("book-title").value;
+        const link = document.getElementById("book-link").value;
+        const description = document.getElementById("book-description").value;
+        const imageInput = document.getElementById("book-image");
+
+        if (title && link && description && imageInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const book = {
+                    title: title,
+                    link: link,
+                    description: description,
+                    image: e.target.result
+                };
+                books.push(book);
+                displayBooks();
+                clearBookInputs();
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+        } else {
+            alert("Por favor, completa todos los campos.");
+        }
+    }
+
+    function displayBooks() {
+        const container = document.getElementById("books-container");
+        container.innerHTML = '';
+        books.forEach(book => {
+            const bookDiv = document.createElement("div");
+            bookDiv.className = "book";
+            bookDiv.innerHTML = `
+                <img src="${book.image}" alt="${book.title}">
+                <div>
+                    <h3>${book.title}</h3>
+                    <p>${book.description}</p>
+                    <a href="${book.link}" target="_blank">Leer más</a>
+                </div>
+            `;
+            container.appendChild(bookDiv);
+        });
+    }
+
+    function clearBookInputs() {
+        document.getElementById("book-title").value = '';
+        document.getElementById("book-link").value = '';
+        document.getElementById("book-description").value = '';
+        document.getElementById("book-image").value = '';
+    }
+
+    function createWordSpans(text, containerId, textAreaId) {
+        const words = text.split(' ');
+        const container = document.getElementById(containerId);
+        
+        // Limpiar el contenedor de palabras anterior
+        container.innerHTML = '';
+
+        words.forEach(word => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.innerText = word + ' ';
+            span.addEventListener('mouseover', () => {
+                const utterance = new SpeechSynthesisUtterance(word);
+                speechSynthesis.speak(utterance);
+            });
+            container.appendChild(span);
+        });
+    }
+</script>
+
+</body>
+</html>
